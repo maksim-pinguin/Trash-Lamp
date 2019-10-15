@@ -376,7 +376,11 @@ void setLCDBrightness(){
     //brightness=-1; //override brightness value - not nessassary
     Serial.printf("Will set brightness value, but FYI the LCD is turned off - set LCDPowerOn to turn the LCD on!\n");
   }
+  #if defined(ARDUINO_ARCH_ESP32)
+			ledcWrite(DIM_PIN,brightness);
+		#else
   analogWrite(DIM_PIN,brightness);                         // write to output pin
+		#endif
   webSocket.broadcastTXT("b: "+String(brightness));
   Serial.printf("Brightness value: %i\n",brightness);
 }   
