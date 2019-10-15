@@ -46,6 +46,20 @@ int dimPinChannel = 0;
 
 const char *mdnsName = "esp8266"; // Domain name for the mDNS responder
 
+void setLCDBrightness();
+String getContentType(String filename);
+String formatBytes(size_t bytes);
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght);
+void handleFileUpload();
+bool handleFileRead(String path);
+void handleNotFound();
+void startServer();
+void startMDNS();
+void startWebSocket();
+void startSPIFFS();
+void startWiFi();
+void startOTA();
+
 /*__________________________________________________________SETUP__________________________________________________________*/
 
 void setup()
