@@ -193,6 +193,19 @@ void startSPIFFS() { // Start the SPIFFS and list all contents
     }
     Serial.printf("\n");
   }
+  else 
+  Serial.println(" Contents:");
+  File root = SPIFFS.open("/");
+ 
+  File file = root.openNextFile();
+ 
+  while(file){
+ 
+      Serial.print("FILE: ");
+      Serial.println(file.name());
+ 
+      file = root.openNextFile();
+  }
   #endif
 }
 
