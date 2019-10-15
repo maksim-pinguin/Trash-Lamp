@@ -49,7 +49,12 @@ const char* mdnsName = "esp8266"; // Domain name for the mDNS responder
 /*__________________________________________________________SETUP__________________________________________________________*/
 
 void setup() {
+ #if defined(ARDUINO_ARCH_ESP32)
+	ledcAttachPin(m_nPinR, m_nChannelR);
+  ledcSetup(DIM_PIN, OUTPUT);
+	#else
   pinMode(DIM_PIN, OUTPUT);    // the pins with LEDs connected are outputs
+	#endif 
   pinMode(POWERON_PIN, OUTPUT);
 
   Serial.begin(115200);        // Start the Serial communication to send messages to the computer
