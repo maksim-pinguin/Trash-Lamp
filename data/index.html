@@ -1,61 +1,60 @@
 <!DOCTYPE html>
 <html style="overflow: visible;">
 
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>Panel Control</title>
-    <link href="main.css" rel="stylesheet" type="text/css">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.ico">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#00878f">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <script src="WebSocket.js" type="text/javascript"></script>
-  </head>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Panel Control</title>
+  <link href="main.css" rel="stylesheet" type="text/css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon.ico">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00878f">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+</head>
 
-  <body style="overflow: visible; margin: 0 auto;">
-      <header>
-        <h1>Panel Control</h1>
-      </header>
-      <div>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <label style="/*! width: 100%; */display: block;" for="LCDPowerToggle"><input type="checkbox" id="LCDPowerToggle" onclick="LCDPowerToggleOnClick();" name="LCDPowerToggle">toggle power state </label>
-              </td>
-            </tr>
+<body style="overflow: visible; margin: 0 auto;">
+  <header>
+    <h1>Panel Control</h1>
+  </header>
+  <div>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <label style="/*! width: 100%; */display: block;" for="LCDPowerToggle"><input type="checkbox"
+                id="LCDPowerToggle" onclick="LCDPowerToggleOnClick();" name="LCDPowerToggle">toggle power state </label>
+          </td>
+        </tr>
 
-            <tr >
-              <td>
-                <p style="margin: 0;">Brightness</p>
-                <input class="" type="range" min="0" max="1023" value="1023" id="brightnessValue" oninput="brightnessValueOnInput();" step="11">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="loopingEffectToggle"><input type="checkbox" id="loopingEffectToggle" onclick="loopingEffectToggleOnClick();" name="loopingEnableValue" checked="checked">Looping?</label>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="loopingIntervalValue" style="display: none;" class="disabled" id="loopingIntervalValueLable">
-                  Speed
-                  <input type="range" step="1" value="10" max="10" min="1" class="disabled" id="loopingIntervalValue" oninput="loopingIntervalValueOnInput()" style="display: none;" hidden="true">
-                </label>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <tr>
+          <td>
+            <p style="margin: 0;">Brightness</p>
+            <input class="" type="range" min="0" max="1023" value="1023" id="brightnessValue"
+              oninput="sendBrightnessValueOnInput();" step="11">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="loopingEffectToggle"><input type="checkbox" id="loopingEffectToggle"
+                onclick="loopingEffectToggleOnClick();" name="loopingEnableValue" checked="checked">Looping?</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="loopingIntervalValue" style="display: none;" class="disabled" id="loopingIntervalValueLable">
+              Speed
+              <input type="range" step="1" value="5" max="10" min="1" class="disabled" id="loopingIntervalValue"
+                oninput="sendLoopingIntervalValueOnInput()" style="display: none;" hidden="true">
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-      </div>
-    <script>
-      document.getElementById("toggleLCDPowerValue").checked = false;
-      document.getElementById("enableLoopingValue").checked = false;
+  </div>
+  <script src="WebSocket.js" type="text/javascript"></script>
 
-    </script>
-  </body>
+</body>
 
 </html>
-

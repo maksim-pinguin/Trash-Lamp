@@ -27,6 +27,9 @@
 #define openDir open
 #endif
 
+#define DEBUGGING(...) Serial.println( __VA_ARGS__ )
+#define DEBUGGING_L(...) Serial.print( __VA_ARGS__ )
+
 WiFiMulti wifiMulti; // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
 WebServer server(80);           // create a web server on port 80
@@ -40,8 +43,8 @@ const char *password = "thereisnospoon";   // The password required to connect t
 const char *OTAName = "bababubu"; // A name and a password for the OTA service
 const char *OTAPassword = "somethingnotsocommon";
 
-#define DIM_PIN 13
-#define POWERON_PIN 15
+#define DIM_PIN 0
+#define POWERON_PIN 2
 int dimPinChannel = 0;
 
 const char *mdnsName = "esp8266"; // Domain name for the mDNS responder
@@ -93,7 +96,7 @@ void setup()
 
 bool LCDPowerOn = false;     // LCD power state. True: on false: off
 int brightness = 0;          // brightness value that is set on LCD panel
-bool looping_effect = false; // if true loop LCD brightness from max to min and repeat til false
+bool loopingEffect = false; // if true loop LCD brightness from max to min and repeat til false
 int interval = 1;            // interval for looping effect
 
 unsigned long prevMillis = millis();
@@ -109,7 +112,7 @@ void loop()
 
   // execute looping effect
   // turn the brightness to max and min in the specified interval
-  if (looping_effect)
+  if (loopingEffect)
   {
     if (millis() > prevMillis + stepsize)
     { // stepsize defines the the resolution! For short stepsizes better use interrupts instead of blocking like this
@@ -253,11 +256,15 @@ void startWebSocket()
 }
 
 void startMDNS()
-{                       // Start the mDNS responder
-  MDNS.begin(mdnsName); // start the multicast domain name server
+{  // Start the mDNS responder
+  if (!MDNS.begin("mdnsName")) {
+   Serial.println("Error setting up MDNS responder!");
+  }
   Serial.print("mDNS responder started: http://");
   Serial.print(mdnsName);
   Serial.println(".local");
+  MDNS.addService("ws", "tcp", 81);
+  MDNS.addService("http", "tcp", 80);
 }
 
 void startServer()
@@ -370,6 +377,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
     IPAddress ip = webSocket.remoteIP(num);
     Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
     //looping_effect = false;                  // Turn looping off when a new connection is established
+    webSocket.sendTXT(num,"b: "+String(brightness));
+    webSocket.sendTXT(num,"i: "+String(interval));
+    webSocket.sendTXT(num,(LCDPowerOn?"o":"p"));
+    webSocket.sendTXT(num,(loopingEffect?"e":"d"));
   }
   break;
   case WStype_TEXT: // if new text data is received
@@ -393,12 +404,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
     }
     else if (payload[0] == 'e')
     { // enable looping_effect
-      looping_effect = true;
+      loopingEffect = true;
       Serial.println("enable looping");
     }
     else if (payload[0] == 'd')
     { // enable looping_effect
-      looping_effect = false;
+      loopingEffect = false;
       Serial.println("disable looping");
     }
     else if (payload[0] == 'i')
