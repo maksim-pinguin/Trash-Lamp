@@ -27,8 +27,8 @@
 #define openDir open
 #endif
 
-#define DEBUGGING(...) Serial.println( __VA_ARGS__ )
-#define DEBUGGING_L(...) Serial.print( __VA_ARGS__ )
+#define DEBUGGING(...) Serial.println(__VA_ARGS__)
+#define DEBUGGING_L(...) Serial.print(__VA_ARGS__)
 
 WiFiMulti wifiMulti; // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -94,10 +94,10 @@ void setup()
 
 /*__________________________________________________________LOOP__________________________________________________________*/
 
-bool LCDPowerOn = false;     // LCD power state. True: on false: off
-int brightness = 0;          // brightness value that is set on LCD panel
+bool LCDPowerOn = false;    // LCD power state. True: on false: off
+int brightness = 0;         // brightness value that is set on LCD panel
 bool loopingEffect = false; // if true loop LCD brightness from max to min and repeat til false
-int interval = 1;            // interval for looping effect
+int interval = 1;           // interval for looping effect
 
 unsigned long prevMillis = millis();
 bool rising = true;
@@ -256,9 +256,10 @@ void startWebSocket()
 }
 
 void startMDNS()
-{  // Start the mDNS responder
-  if (!MDNS.begin("mdnsName")) {
-   Serial.println("Error setting up MDNS responder!");
+{ // Start the mDNS responder
+  if (!MDNS.begin("mdnsName"))
+  {
+    Serial.println("Error setting up MDNS responder!");
   }
   Serial.print("mDNS responder started: http://");
   Serial.print(mdnsName);
@@ -377,10 +378,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
     IPAddress ip = webSocket.remoteIP(num);
     Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
     //looping_effect = false;                  // Turn looping off when a new connection is established
-    webSocket.sendTXT(num,"b: "+String(brightness));
-    webSocket.sendTXT(num,"i: "+String(interval));
-    webSocket.sendTXT(num,(LCDPowerOn?"o":"p"));
-    webSocket.sendTXT(num,(loopingEffect?"e":"d"));
+    webSocket.sendTXT(num, "b: " + String(brightness));
+    webSocket.sendTXT(num, "i: " + String(interval));
+    webSocket.sendTXT(num, (LCDPowerOn ? "o" : "p"));
+    webSocket.sendTXT(num, (loopingEffect ? "e" : "d"));
   }
   break;
   case WStype_TEXT: // if new text data is received
@@ -390,12 +391,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
       LCDPowerOn = true; // set LCD power state to on
       digitalWrite(POWERON_PIN, 1);
       Serial.println("Turn on LCD");
+      webSocket.broadcastTXT("o");
     }
     else if (payload[0] == 'p')
     {
       Serial.println("Turn off LCD");
       LCDPowerOn = false; // set LCD power state to off
       digitalWrite(POWERON_PIN, 0);
+      webSocket.broadcastTXT("p");
     }
     else if (payload[0] == 'b')
     {
@@ -406,15 +409,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
     { // enable looping_effect
       loopingEffect = true;
       Serial.println("enable looping");
+      webSocket.broadcastTXT("e");
     }
     else if (payload[0] == 'd')
     { // enable looping_effect
       loopingEffect = false;
       Serial.println("disable looping");
+      webSocket.broadcastTXT("d");
     }
     else if (payload[0] == 'i')
     {
       interval = atoi((const char *)&payload[1]); // decode string to int
+      webSocket.broadcastTXT("i: " + String(interval));
     }
     break;
   }
