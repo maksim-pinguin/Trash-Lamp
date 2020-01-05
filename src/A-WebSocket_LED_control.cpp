@@ -272,8 +272,7 @@ void startServer()
 {                                           // Start a HTTP server with a file read handler and an upload handler
   server.on("/edit.html", HTTP_POST, []() { // If a POST request is sent to the /edit.html address,
     server.send(200, "text/plain", "");
-  },
-            handleFileUpload); // go to 'handleFileUpload'
+  },handleFileUpload); // go to 'handleFileUpload'
 
   server.onNotFound(handleNotFound); // if someone requests any other file or page, go to function 'handleNotFound'
                                      // and check if the file exists
@@ -313,7 +312,7 @@ bool handleFileRead(String path)
     File file = SPIFFS.open(path, "r");                 // Open the file
     size_t sent = server.streamFile(file, contentType); // Send it to the client
     file.close();                                       // Close the file again
-    Serial.println(String("\tSent file: ") + path);
+    Serial.printf("\tSent file: %s (%s)", path.c_str(), formatBytes(sent).c_str());
     return true;
   }
   Serial.println(String("\tFile Not Found: ") + path); // If the file doesn't exist, return false
@@ -423,6 +422,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
       webSocket.broadcastTXT("i: " + String(interval));
     }
     break;
+    default:
+      Serial.printf("Unexpected WebSocketType (num: %i) received.",type);
+    break;
   }
 }
 
@@ -433,18 +435,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
 */
 String formatBytes(size_t bytes)
 {
-  if (bytes < 1024)
+  if (bytes < (1024 * 1024))
   {
-    return String(bytes) + "B";
-  }
-  else if (bytes < (1024 * 1024))
+    return String(bytes / 1024.0 / 1024.0) + "MB";
+  }else if (bytes >= 1024)
   {
     return String(bytes / 1024.0) + "KB";
   }
-  else if (bytes < (1024 * 1024 * 1024))
-  {
-    return String(bytes / 1024.0 / 1024.0) + "MB";
-  }
+  //else if (bytes < 1024)
+  //{
+    return String(bytes) + "B";
+  //}
+  
 }
 
 /**
