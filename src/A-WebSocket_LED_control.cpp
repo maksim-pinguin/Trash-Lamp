@@ -435,7 +435,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t lenght)
 */
 String formatBytes(size_t bytes)
 {
-  if (bytes < (1024 * 1024))
+  if (bytes >= (1024 * 1024))
   {
     return String(bytes / 1024.0 / 1024.0) + "MB";
   }else if (bytes >= 1024)
